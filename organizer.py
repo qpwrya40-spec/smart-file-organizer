@@ -20,7 +20,7 @@ def category_for(path):
     return "Other"
 
 
-def organize(folder):
+def organize(folder, dry_run=False):
     folder = Path(folder).expanduser().resolve()
 
     if not folder.is_dir():
@@ -34,7 +34,31 @@ def organize(folder):
 
         category = category_for(item)
         destination = folder / category
+        target = destination / item.name
+
+        if dry_run:
+            print(f"{item.name} -> {category}/")
+            continue
+
         destination.mkdir(exist_ok=True)
+
+        if target.exists():
+            stem = item.stem
+            suffix = item.suffix
+            counter = 1
+
+            while target.exists():
+                target = destination / f"{stem}_{counter}{suffix}"
+                counter += 1
+
+        shutil.move(str(item), str(target))
+        print(f"Moved: {item.name} -> {category}/")
+
+
+if __name__ == "__main__":
+    folder = input("Enter the folder path: ").strip()
+
+           destination.mkdir(exist_ok=True)
 
         target = destination / item.name
 
